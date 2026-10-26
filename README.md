@@ -6,6 +6,8 @@
 
 完整安裝與交付方式請看 [交付說明](交付說明.md)；工作流程定義於 [SKILL.md](.agents/skills/fulltext-literature-review/SKILL.md)。
 
+使用 LangChain Deep Agents SDK 的串接方式與試跑範例，請看 [Deep Agents 串接指南](DEEPAGENTS_GUIDE.md)。
+
 - 需要能讀寫檔案、查看圖片、執行 Python 與建立子代理的 AI 工具。
 - 需要 Python 3.10 以上，腳本只使用標準函式庫。
 - 請自行準備論文 Markdown 與圖片；本 skill 不負責論文取得或 PDF 轉換。
