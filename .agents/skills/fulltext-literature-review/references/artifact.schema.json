@@ -1,0 +1,941 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fulltext review artifacts: lean v2 and historical v1",
+  "anyOf": [
+    {
+      "$ref": "#/$defs/paper"
+    },
+    {
+      "$ref": "#/$defs/check"
+    },
+    {
+      "$ref": "#/$defs/paperV2"
+    },
+    {
+      "$ref": "#/$defs/checkV2"
+    }
+  ],
+  "$defs": {
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "claimId": {
+      "type": "string",
+      "pattern": "^(P[0-9]{3,}|S)-C[0-9]{2,}$"
+    },
+    "ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/claimId"
+      },
+      "uniqueItems": true
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "contract_version",
+        "kind",
+        "id",
+        "author",
+        "revision"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "const": 2
+        },
+        "kind": {
+          "enum": [
+            "paper",
+            "check"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^(P[0-9]{3,}|S)$"
+        },
+        "author": {
+          "$ref": "#/$defs/text"
+        },
+        "revision": {
+          "$ref": "#/$defs/text"
+        },
+        "report": {
+          "$ref": "#/$defs/text"
+        },
+        "report_author": {
+          "$ref": "#/$defs/text"
+        },
+        "sha256": {
+          "$ref": "#/$defs/hash"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source",
+        "sha256",
+        "locator",
+        "excerpt",
+        "reasoning"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "pattern": "^P[0-9]{3,}(-[TI][0-9]{3,})?$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "locator": {
+          "$ref": "#/$defs/text"
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "excerpt": {
+          "$ref": "#/$defs/text"
+        },
+        "reasoning": {
+          "$ref": "#/$defs/text"
+        },
+        "calculation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "evidenceList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      }
+    },
+    "claim": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "role",
+        "statement",
+        "conditions",
+        "uncertainty",
+        "evidence",
+        "results"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/claimId"
+        },
+        "kind": {
+          "enum": [
+            "author claim",
+            "agent analysis"
+          ]
+        },
+        "role": {
+          "enum": [
+            "question",
+            "method",
+            "finding",
+            "negative-result",
+            "limitation",
+            "analysis"
+          ]
+        },
+        "statement": {
+          "$ref": "#/$defs/text"
+        },
+        "conditions": {
+          "$ref": "#/$defs/text"
+        },
+        "uncertainty": {
+          "type": "string"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "metric",
+              "value",
+              "unit",
+              "dataset",
+              "comparison",
+              "setting"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "metric": {
+                "$ref": "#/$defs/text"
+              },
+              "value": {
+                "$ref": "#/$defs/text"
+              },
+              "unit": {
+                "$ref": "#/$defs/text"
+              },
+              "dataset": {
+                "$ref": "#/$defs/text"
+              },
+              "comparison": {
+                "$ref": "#/$defs/text"
+              },
+              "setting": {
+                "$ref": "#/$defs/text"
+              }
+            }
+          }
+        }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "required": [
+        "source",
+        "sha256",
+        "action",
+        "confirmed",
+        "note"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "pattern": "^P[0-9]{3,}(-[TI][0-9]{3,})?$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "action": {
+          "$ref": "#/$defs/text"
+        },
+        "confirmed": {
+          "type": "boolean"
+        },
+        "note": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "issue": {
+      "type": "object",
+      "required": [
+        "id",
+        "category",
+        "location",
+        "description",
+        "severity",
+        "claim_ids",
+        "impact",
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/text"
+        },
+        "category": {
+          "enum": [
+            "source",
+            "understanding",
+            "coverage"
+          ]
+        },
+        "location": {
+          "$ref": "#/$defs/text"
+        },
+        "description": {
+          "$ref": "#/$defs/text"
+        },
+        "severity": {
+          "enum": [
+            "major",
+            "minor"
+          ]
+        },
+        "claim_ids": {
+          "$ref": "#/$defs/ids"
+        },
+        "impact": {
+          "$ref": "#/$defs/text"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "resolved"
+          ]
+        }
+      }
+    },
+    "paper": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "meta",
+        "title",
+        "paper_type",
+        "bibliography",
+        "question",
+        "methods",
+        "comparison_claim_ids",
+        "claims",
+        "coverage",
+        "issues"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/meta"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "const": "paper"
+                },
+                "id": {
+                  "type": "string",
+                  "pattern": "^P[0-9]{3,}$"
+                }
+              }
+            }
+          ]
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "paper_type": {
+          "enum": [
+            "empirical",
+            "theoretical",
+            "review",
+            "mixed",
+            "other"
+          ]
+        },
+        "bibliography": {
+          "type": "object",
+          "required": [
+            "authors",
+            "year",
+            "venue",
+            "identifier"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "authors": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "year": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "venue": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "identifier": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "question": {
+          "$ref": "#/$defs/text"
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "aspect",
+              "status",
+              "claim_ids",
+              "note"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "aspect": {
+                "$ref": "#/$defs/text"
+              },
+              "status": {
+                "enum": [
+                  "reported",
+                  "not-reported",
+                  "not-applicable",
+                  "not-yet-read"
+                ]
+              },
+              "claim_ids": {
+                "$ref": "#/$defs/ids"
+              },
+              "note": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "comparison_claim_ids": {
+          "$ref": "#/$defs/ids"
+        },
+        "claims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claim"
+          }
+        },
+        "coverage": {
+          "type": "object",
+          "required": [
+            "status",
+            "understanding",
+            "observations"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": [
+                "complete",
+                "incomplete"
+              ]
+            },
+            "understanding": {
+              "enum": [
+                "resolved",
+                "gaps"
+              ]
+            },
+            "observations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/observation"
+              }
+            }
+          }
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/issue"
+          }
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "required": [
+        "claim_id",
+        "excerpt",
+        "claimed_locator",
+        "inspected",
+        "verdict",
+        "severity",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {
+          "$ref": "#/$defs/claimId"
+        },
+        "excerpt": {
+          "$ref": "#/$defs/text"
+        },
+        "claimed_locator": {
+          "$ref": "#/$defs/text"
+        },
+        "inspected": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "verdict": {
+          "enum": [
+            "supported",
+            "revise",
+            "unresolved",
+            "pending"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "none",
+            "minor",
+            "major"
+          ]
+        },
+        "reason": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "round": {
+      "type": "object",
+      "required": [
+        "round",
+        "revision",
+        "sha256",
+        "findings",
+        "carry_forward",
+        "coverage_findings"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "round": {
+          "enum": [
+            0,
+            1
+          ]
+        },
+        "revision": {
+          "$ref": "#/$defs/text"
+        },
+        "sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/finding"
+          }
+        },
+        "carry_forward": {
+          "$ref": "#/$defs/ids"
+        },
+        "coverage_findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "location",
+              "verdict",
+              "severity",
+              "reason"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "location": {
+                "$ref": "#/$defs/text"
+              },
+              "verdict": {
+                "enum": [
+                  "supported",
+                  "revise",
+                  "unresolved",
+                  "pending"
+                ]
+              },
+              "severity": {
+                "enum": [
+                  "none",
+                  "minor",
+                  "major"
+                ]
+              },
+              "reason": {
+                "$ref": "#/$defs/text"
+              }
+            }
+          }
+        }
+      }
+    },
+    "check": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "meta",
+        "verification",
+        "rounds",
+        "withdrawals"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/meta"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "const": "check"
+                }
+              },
+              "required": [
+                "report",
+                "report_author",
+                "sha256"
+              ]
+            }
+          ]
+        },
+        "verification": {
+          "enum": [
+            "pending",
+            "passed",
+            "needs-confirmation"
+          ]
+        },
+        "rounds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/round"
+          }
+        },
+        "withdrawals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "claim_id",
+              "reason",
+              "evidence"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "claim_id": {
+                "$ref": "#/$defs/claimId"
+              },
+              "reason": {
+                "$ref": "#/$defs/text"
+              },
+              "evidence": {
+                "$ref": "#/$defs/evidenceList"
+              }
+            }
+          }
+        }
+      }
+    },
+    "evidenceV2": {
+      "type": "object",
+      "required": [
+        "source",
+        "locator"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "pattern": "^P[0-9]{3,}(-[TI][0-9]{3,})?$"
+        },
+        "locator": {
+          "$ref": "#/$defs/text"
+        },
+        "start": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "end": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "path": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "observationV2": {
+      "type": "object",
+      "required": [
+        "source",
+        "action",
+        "confirmed",
+        "note"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "pattern": "^P[0-9]{3,}(-[TI][0-9]{3,})?$"
+        },
+        "locator": {
+          "$ref": "#/$defs/text"
+        },
+        "start": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "end": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "path": {
+          "$ref": "#/$defs/text"
+        },
+        "action": {
+          "$ref": "#/$defs/text"
+        },
+        "confirmed": {
+          "type": "boolean"
+        },
+        "note": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "metaV2": {
+      "type": "object",
+      "required": [
+        "contract_version",
+        "kind",
+        "id",
+        "author",
+        "revision"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "const": 3
+        },
+        "kind": {
+          "enum": [
+            "paper",
+            "check"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^(P[0-9]{3,}|S)$"
+        },
+        "author": {
+          "$ref": "#/$defs/text"
+        },
+        "revision": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "claimV2": {
+      "type": "object",
+      "required": [
+        "id",
+        "statement",
+        "conditions",
+        "uncertainty",
+        "evidence"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/claimId"
+        },
+        "statement": {
+          "$ref": "#/$defs/text"
+        },
+        "conditions": {
+          "$ref": "#/$defs/text"
+        },
+        "uncertainty": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidenceV2"
+          },
+          "minItems": 0
+        }
+      }
+    },
+    "findingV2": {
+      "type": "object",
+      "required": [
+        "claim_id",
+        "verdict",
+        "inspected",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {
+          "$ref": "#/$defs/claimId"
+        },
+        "verdict": {
+          "enum": [
+            "supported",
+            "revise",
+            "pending"
+          ]
+        },
+        "inspected": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidenceV2"
+          },
+          "minItems": 0
+        },
+        "reason": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "paperV2": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "meta",
+        "title",
+        "question",
+        "methods",
+        "claims",
+        "limitations",
+        "coverage"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 2
+        },
+        "meta": {
+          "$ref": "#/$defs/metaV2"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "question": {
+          "$ref": "#/$defs/text"
+        },
+        "methods": {
+          "$ref": "#/$defs/text"
+        },
+        "claims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimV2"
+          },
+          "minItems": 1
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          },
+          "minItems": 0
+        },
+        "coverage": {
+          "type": "object",
+          "required": [
+            "observations",
+            "gaps"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "observations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/observationV2"
+              },
+              "minItems": 0
+            },
+            "gaps": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              },
+              "minItems": 0
+            }
+          }
+        }
+      }
+    },
+    "checkV2": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "meta",
+        "binding",
+        "findings",
+        "omissions",
+        "completed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 2
+        },
+        "meta": {
+          "$ref": "#/$defs/metaV2"
+        },
+        "binding": {
+          "type": "object"
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/findingV2"
+          },
+          "minItems": 0
+        },
+        "omissions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          },
+          "minItems": 0
+        },
+        "completed": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+
+# Local papers and generated review artifacts
+/runs/
+/test_papers/
+/test_papers_3/
+/tests/results/
+
+# Local environments and credentials
+.venv/
+venv/
+.env
+.env.*
+!.env.example
